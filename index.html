@@ -1,21 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบเรียกคิว</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f3f4f6;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .current-queue {
+            margin-top: 30px;
+            font-size: 36px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .current-channel {
+            font-size: 28px;
+            color: #2ecc71;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ระบบเรียกคิว</h1>
-        <div class="queue-info">
-            <p id="current-queue">คิวปัจจุบัน: <span id="queue-number"></span></p>
-            <p id="current-channel">ช่องบริการ: <span id="channel-number"></span></p>
-        </div>
-        <button id="reset-button">รีเซ็ตคิว</button>
-        <button id="recall-button">เรียกคิวซ้ำ</button>
+    <h1>ระบบเรียกคิว</h1>
+
+    <button onclick="callQueue(1)">เรียกช่อง 1</button>
+    <button onclick="callQueue(2)">เรียกช่อง 2</button>
+    <button onclick="callQueue(3)">เรียกช่อง 3</button>
+    <button onclick="callQueue(4)">เรียกช่อง 4</button>
+
+    <div class="current-queue" id="currentQueue">
+        คิวปัจจุบัน: -
     </div>
-    <p class="footer">จัดทำโดย นวก.โสตฯ ศุภฤกษ์ เนตรแก้ว</p>
-    <p class="footer">โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</p>
-    <script src="script.js"></script>
+    <div class="current-channel" id="currentChannel">
+        ที่ช่องบริการ: -
+    </div>
+
+    <div class="controls">
+        <button onclick="resetQueue()" style="background-color: #e74c3c;">รีเซ็ตคิว</button>
+        <button onclick="repeatQueue()" style="background-color: #8e44ad;">เรียกคิวปัจจุบันอีกครั้ง</button>
+    </div>
+
+    <div class="footer">
+        <p>จัดทำโดย นวก.โสตฯ ศุภฤกษ์ เนตรแก้ว</p>
+        <p>โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</p>
+    </div>
+
+    <script>
+        let queueNumber = 1;
+        let lastChannel = null;
+
+        function callQueue(channel) {
+            lastChannel = channel;
+            document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${queueNumber}`;
+            document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${channel}`;
+            queueNumber++;
+        }
+
+        function resetQueue() {
+            queueNumber = 1;
+            lastChannel = null;
+            document.getElementById('currentQueue').innerText = "คิวปัจจุบัน: -";
+            document.getElementById('currentChannel').innerText = "ที่ช่องบริการ: -";
+        }
+
+        function repeatQueue() {
+            if (lastChannel !== null) {
+                document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${queueNumber - 1}`;
+                document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${lastChannel}`;
+            }
+        }
+    </script>
 </body>
 </html>
