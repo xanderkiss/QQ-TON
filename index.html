@@ -42,11 +42,6 @@
         .controls {
             margin-top: 20px;
         }
-        .footer {
-            margin-top: 50px;
-            font-size: 14px;
-            color: #7f8c8d;
-        }
     </style>
 </head>
 <body>
@@ -70,34 +65,95 @@
     </div>
 
     <div class="footer">
-        <p>จัดทำโดย นวก.โสตฯ ศุภฤกษ์ เนตรแก้ว</p>
-        <p>โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</p>
+        <p>จัดทำโดย นวก.โสตฯ ศุภฤกษ์ เนตรแก้ว<br>
+        โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</p>
     </div>
 
-    <script>
-        let queueNumber = 1;
-        let lastChannel = null;
+   <script>
+    let queueNumber = 1;
+    let lastChannel = null;
+    let popupWindow = null;
 
-        function callQueue(channel) {
-            lastChannel = channel;
-            document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${queueNumber}`;
-            document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${channel}`;
-            queueNumber++;
+    // ฟังก์ชันสำหรับเปิด Popup และแสดงผลคิวปัจจุบัน
+    function openPopup(queueText, channelText) {
+        if (popupWindow && !popupWindow.closed) {
+            popupWindow.document.getElementById('popupQueue').innerText = queueText;
+            popupWindow.document.getElementById('popupChannel').innerText = channelText;
+        } else {
+            popupWindow = window.open("", "QueuePopup", "width=600,height=400");
+            popupWindow.document.write(`
+                <html>
+                <head>
+                    <title>สถานะการเรียกคิว</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; background-color: #333; color: #fff; margin: 0; }
+                        #popupQueue { font-size: 400px; font-weight: bold; color: #e74c3c; margin-bottom: 20px; }
+                        #popupChannel { font-size: 200px; color: #2ecc71; }
+                        button { padding: 10px 20px; font-size: 18px; background-color: #3498db; border: none; border-radius: 5px; color: #fff; cursor: pointer; margin-top: 20px; }
+                        button:hover { background-color: #2980b9; }
+                    </style>
+                </head>
+                <body>
+                    <div id="popupQueue">${queueText}</div>
+                    <div id="popupChannel">${channelText}</div>
+                </body>
+                </html>
+            `);
+            popupWindow.document.close();
         }
+    }
 
-        function resetQueue() {
-            queueNumber = 1;
-            lastChannel = null;
-            document.getElementById('currentQueue').innerText = "คิวปัจจุบัน: -";
-            document.getElementById('currentChannel').innerText = "ที่ช่องบริการ: -";
-        }
+    // ฟังก์ชันสำหรับเรียกคิวตามช่องบริการ
+    function callQueue(channel) {
+        lastChannel = channel;
+        queueNumber = parseInt(localStorage.getItem('queueNumber')) || 1;
 
-        function repeatQueue() {
-            if (lastChannel !== null) {
-                document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${queueNumber - 1}`;
-                document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${lastChannel}`;
-            }
+        document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${queueNumber}`;
+        document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${channel}`;
+
+        localStorage.setItem('queueNumber', queueNumber + 1);
+        localStorage.setItem('lastChannel', channel);
+        openPopup(`คิวที่ ${queueNumber}`, `ช่องบริการ ${channel}`);
+
+        queueNumber++;
+    }
+
+    // ฟังก์ชันสำหรับรีเซ็ตคิวทั้งหมด
+    function resetQueue() {
+        queueNumber = 1;
+        lastChannel = null;
+        document.getElementById('currentQueue').innerText = "คิวปัจจุบัน: -";
+        document.getElementById('currentChannel').innerText = "ที่ช่องบริการ: -";
+
+        localStorage.setItem('queueNumber', 1);
+        localStorage.setItem('lastChannel', "");
+        openPopup("", "");
+    }
+
+    // ฟังก์ชันสำหรับเรียกคิวปัจจุบันซ้ำอีกครั้ง
+    function repeatQueue() {
+        queueNumber = parseInt(localStorage.getItem('queueNumber')) || 1;
+        lastChannel = localStorage.getItem('lastChannel');
+
+        if (lastChannel !== null && lastChannel !== "") {
+            document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${queueNumber - 1}`;
+            document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${lastChannel}`;
+            openPopup(`คิวที่ ${queueNumber - 1}`, `ซ้ำอีกครั้งที่ช่องบริการ ${lastChannel}`);
         }
-    </script>
+    }
+
+    // อัปเดต UI ทันทีที่มีการเปลี่ยนแปลงใน localStorage
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'queueNumber' || event.key === 'lastChannel') {
+            const currentQueue = parseInt(localStorage.getItem('queueNumber')) - 1 || 1;
+            const currentChannel = localStorage.getItem('lastChannel') || "-";
+            document.getElementById('currentQueue').innerText = `คิวปัจจุบัน: ${currentQueue}`;
+            document.getElementById('currentChannel').innerText = `ที่ช่องบริการ: ${currentChannel}`;
+
+            openPopup(`คิวที่ ${currentQueue}`, `ช่องบริการ ${currentChannel}`);
+        }
+    });
+</script>
+
 </body>
 </html>
