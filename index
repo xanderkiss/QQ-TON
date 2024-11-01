@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ระบบเรียกคิว</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>ระบบเรียกคิว</h1>
+        <div class="queue-info">
+            <p id="current-queue">คิวปัจจุบัน: <span id="queue-number"></span></p>
+            <p id="current-channel">ช่องบริการ: <span id="channel-number"></span></p>
+        </div>
+        <button id="reset-button">รีเซ็ตคิว</button>
+        <button id="recall-button">เรียกคิวซ้ำ</button>
+    </div>
+    <p class="footer">จัดทำโดย นวก.โสตฯ ศุภฤกษ์ เนตรแก้ว</p>
+    <p class="footer">โรงพยาบาลสมเด็จพระเจ้าตากสินมหาราช</p>
+    <script src="script.js"></script>
+</body>
+</html>
